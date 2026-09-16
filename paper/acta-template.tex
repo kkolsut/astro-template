@@ -1,0 +1,78 @@
+\nofiles
+\documentclass[dvips]{acta}
+\usepackage{supertabular,lscape,epsfig}
+\usepackage{amssymb}
+\usepackage{amsmath}
+
+\SetPages{0}{0}
+
+\SetVol{58}{2008}
+
+\begin{document}
+
+
+\begin{Titlepage}
+\Title{Title of the Paper}
+\Author{A~u~t~h~o~r~1, First Initials.,}{Affiliation1\\
+e-mail:}
+
+\Author{A~u~t~h~o~r~N, First Initials.}{AffiliationN\\
+e-mail:}
+
+or 
+
+\Author{A~u~t~h~o~r1, First Initials. \dots and A~u~t~h~o~r~N, 
+First Initials.}{Common Affiliation\\
+e-mail:}
+
+or 
+
+\Author{A~u~t~h~o~r1$^1$, First Initials. \dots and A~u~t~h~o~r~N$^N$, 
+First Initials.}
+{$^1$Affiliation1\\
+e-mail:\\
+$^N$AffiliationN\\
+e-mail:}
+
+\Received{Month Day, Year}
+\end{Titlepage}
+
+\Abstract{Text of the Abstract. Paper must start with a brief 
+abstract stating clearly the principal conclusion of the work.}{key words
+from the common list of the major astronomical and astrophysical journals}
+
+\section{Title of the Section}
+Papers, except for short notes and {\it Letters}, should be divided into
+Chapters numbered by Arabic numerals.
+
+\subsection{Title of the Subsection}
+Chapters may be divided into Paragraphs denoted by the number
+of the Chapter and the number of the Paragraph; {\it e.g.,} the third
+Paragraph of the second Chapter is denoted by 2.3.  Each Chapter and
+each Paragraph should have a short descriptive title.
+
+\MakeTable{rclc|l|c|r|}{12.5cm}{Title of the Table}
+{\hline
+column 1 & column 2 & column 3 & or & column 1 & column 2 & column 3\\
+\hline
+1 & 2 & 3 & or & 1 & 2 & 3\\
+\hline
+\multicolumn{7}{p{9cm}}{All tables should be set in {\TeX}/{\LaTeX}. Each table
+should be numbered sequentially with Arabic numerals and be supplemented by
+a short title describing its content.}
+}
+
+\begin{figure}[htb]
+\includegraphics{fig1.ps}
+\FigCap{Figure Caption.}
+\end{figure}
+
+
+\Acknow{Text of the acknowledgements}
+
+\begin{references}
+\refitem{Author1, I., Author2, I., and AuthorN, I.}{year}
+{title of the journal}{volume}{page}
+\end{references}
+
+\end{document}

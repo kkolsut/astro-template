@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "astro-agents": {
+      "source": {
+        "source": "directory",
+        "path": "/home/sisio/projects/astro-agents"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "astro@astro-agents": true
+  }
+}

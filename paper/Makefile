@@ -1,0 +1,66 @@
+MS      := ms
+
+# compat/ holds stand-ins for what the class needs and TeX Live no longer
+# ships. It goes LAST on both paths -- the empty element is kpathsea's default
+# search path -- so a real file always wins over a stand-in. That matters for
+# pcrbo.tfm: install texlive-courier and the genuine metric takes over with no
+# change here.
+#
+# TEXFONTS is separate from TEXINPUTS. A .tfm is not found via the latter,
+# which is also why the shim in compat/pslatex.sty cannot probe for one: its
+# \IfFileExists only ever searches TEXINPUTS. kpsewhich looks in the right
+# place, so resolve the font directories here and add them, and the shim's
+# probes start working.
+empty :=
+space := $(empty) $(empty)
+
+FONTPROBES := ptmr8t.tfm phvr8t.tfm pcrr8t.tfm
+FONTDIRS   := $(sort $(foreach f,$(FONTPROBES),$(dir $(shell kpsewhich $(f) 2>/dev/null))))
+
+TEXINPUTS := .::compat:$(subst $(space),:,$(FONTDIRS))
+TEXFONTS  := .::compat
+
+.PHONY: all clean distclean check
+
+all: $(MS).pdf
+
+# Two passes so \ref, \label and the page counter settle.
+$(MS).pdf: $(MS).tex references.tex acta.cls $(wildcard figures/*.pdf)
+	TEXINPUTS=$(TEXINPUTS) TEXFONTS=$(TEXFONTS) pdflatex -interaction=nonstopmode -halt-on-error $(MS).tex
+	TEXINPUTS=$(TEXINPUTS) TEXFONTS=$(TEXFONTS) pdflatex -interaction=nonstopmode -halt-on-error $(MS).tex
+	@echo
+	@grep -E "Reference .* undefined|Citation .* undefined|Overfull" $(MS).log || echo "no undefined refs, no overfull boxes"
+
+clean:
+	rm -f $(MS).aux $(MS).log $(MS).out $(MS).toc
+
+distclean: clean
+	rm -f $(MS).pdf
+
+# Report what the manuscript needs and the system does not have. The Acta
+# class is from 2008 and Fedora's texlive is split into many small packages,
+# so a fresh machine is usually missing several of these.
+check:
+	@missing=""; \
+	for f in amsmath.sty amssymb.sty supertabular.sty lscape.sty graphicx.sty \
+	         ptmr8t.tfm phvr8t.tfm; do \
+	  kpsewhich $$f >/dev/null 2>&1 || missing="$$missing $$f"; \
+	done; \
+	if [ -z "$$missing" ]; then \
+	  echo "required: all present"; \
+	else \
+	  echo "required, MISSING:$$missing"; \
+	  echo "  sudo dnf install texlive-amsmath texlive-amsfonts \\"; \
+	  echo "                   texlive-supertabular texlive-times texlive-helvetic"; \
+	fi; \
+	if kpsewhich pcrr8t.tfm >/dev/null 2>&1; then \
+	  echo "optional: Courier present"; \
+	else \
+	  echo "optional, missing: pcrr8t.tfm -- \\texttt is Computer Modern, not the"; \
+	  echo "          narrowed Courier pslatex used. Cosmetic; shows on filenames."; \
+	  echo "  sudo dnf install texlive-courier"; \
+	fi; \
+	echo; \
+	echo "compat/ covers the two things no package still provides: pslatex.sty,"; \
+	echo "and the pcrbo metric the class loads eagerly. Both step aside if a"; \
+	echo "real one is ever installed."

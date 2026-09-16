@@ -1,0 +1,41 @@
+[project]
+name = "astro-template"
+version = "0.1.0"
+description = "Astronomy project"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    # core
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "pandas",
+    "astropy",
+    # archives & catalogs
+    "astroquery",
+    "pyvo",
+    # imaging / photometry
+    "photutils",
+    "ccdproc",
+    "astroscrappy",
+    "reproject",
+    "sep",
+    # spectroscopy
+    "specutils",
+    # time domain
+    "lightkurve",
+    "batman-package",
+    # inference
+    "emcee",
+    "dynesty",
+    "corner",
+    "arviz",
+    "celerite2",
+    # theory / dynamics
+    "rebound",
+    "galpy",
+    # notebooks
+    "jupyterlab",
+    "ipykernel",
+    # batman imports distutils at runtime; setuptools supplies the shim on py>=3.12
+    "setuptools>=83.0.0",
+]

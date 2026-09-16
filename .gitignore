@@ -1,0 +1,33 @@
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+data/raw/**
+data/interim/**
+# Re-include the directories themselves, or git never descends far enough to see the
+# negations below and the manifests get silently excluded.
+!data/raw/**/
+!data/interim/**/
+!data/**/MANIFEST.md
+!**/.gitkeep
+results/*.png
+*.h5
+*.nc
+
+# LaTeX build products. ms.pdf is regenerable from ms.tex with `make`, and a
+# committed PDF diverges from the source the moment anyone forgets to rebuild.
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.toc
+paper/*.pdf
+paper/missfont.log
+
+# Figures are produced by scripts/, like everything else in interim/ and
+# processed/. The directory stays so the build has somewhere to write.
+paper/figures/*
+!paper/figures/.gitkeep
+
+# references.tex is generated from docs/lit/refs.bib by scripts/bib2acta.py.
+# The .bib is the source and is tracked.
+paper/references.tex

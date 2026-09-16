@@ -1,0 +1,52 @@
+%% pslatex.sty -- local compatibility shim.  NOT the real package.
+%%
+%% acta.cls (2008) ends with \usepackage{pslatex}. That package was declared
+%% obsolete and dropped from TeX Live, so the journal's own class no longer
+%% loads on a current system. pslatex selected Times for roman, Helvetica
+%% for sans and a narrowed Courier for typewriter; mathptmx + helvet give
+%% the first two.
+%%
+%% Those need the Type 1 metrics from texlive-times / texlive-helvetic /
+%% texlive-courier, which Fedora splits out and does not install by default.
+%% Loading mathptmx without them does not fail loudly -- it silently yields
+%% nullfont in the running head and Computer Modern in the body, i.e. a
+%% document whose line breaking is not the journal's. So probe for each
+%% metric and only switch fonts that are really there.
+%%
+%% The probes are \IfFileExists, which searches TEXINPUTS and therefore can
+%% never see a .tfm on its own. The Makefile resolves the font directories
+%% with kpsewhich and puts them on TEXINPUTS so these tests mean something.
+%% Running pdflatex by hand, outside make, will fall back to Latin Modern.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{pslatex}[2026/09/16 local stand-in for the removed pslatex]
+
+\IfFileExists{ptmr8t.tfm}{%
+  \RequirePackage{mathptmx}%
+  \IfFileExists{phvr8t.tfm}{\RequirePackage[scaled=0.92]{helvet}}{}%
+  %% pslatex narrowed Courier to 85% because Courier is conspicuously wide
+  %% next to Times. Without the metrics, tt stays Computer Modern, which is
+  %% visible wherever the text sets a filename or a keyword.
+  \IfFileExists{pcrr8t.tfm}{%
+    \RequirePackage{courier}%
+    \renewcommand{\ttdefault}{pcr}%
+  }{%
+    \ClassWarningNoLine{acta}{%
+      Courier metrics (pcrr8t.tfm) not found -- \string\texttt\space will
+      be Computer\MessageBreak
+      Modern, not the narrowed Courier pslatex used.\MessageBreak
+      Fix with: sudo dnf install texlive-courier}%
+  }%
+}{%
+  %% No Times. Computer Modern is not a usable fallback here: this system has
+  %% no Type 1 CM, so math would be chased into Metafont and the build dies
+  %% with "Font cmr10 at 657 not found". Latin Modern is CM's shape with
+  %% modern outlines and a complete math set, so the draft still builds.
+  \IfFileExists{lmodern.sty}{\RequirePackage{lmodern}}{}%
+  \ClassWarningNoLine{acta}{%
+    Times metrics (ptmr8t.tfm) not found -- using Latin Modern.\MessageBreak
+    The document builds, but line breaking and page counts will NOT\MessageBreak
+    match the journal's. Do not send a proof made this way.\MessageBreak
+    Fix with: sudo dnf install texlive-times texlive-helvetic\MessageBreak
+    See paper/STYLE.md}%
+}
+\endinput

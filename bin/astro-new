@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+#
+# Start a new astronomy project from this template.
+#
+#   astro-new <name> [parent-directory]
+#
+# Creates <parent>/<name> as its own git repository with the paper toolchain,
+# the directory layout and the conventions already in place, and nothing of
+# the template's own history. One repository per project, not a branch: the
+# data directories are gitignored, so a branch would leave the previous
+# project's files sitting in data/ where a script would happily read them.
+
+set -euo pipefail
+
+die() { printf 'astro-new: %s\n' "$1" >&2; exit 1; }
+
+[ $# -ge 1 ] || die "usage: astro-new <name> [parent-directory]"
+
+name=$1
+parent=${2:-$PWD}
+
+case $name in
+    */*|.|..|"") die "'$name' is not a usable project name" ;;
+esac
+
+# The template is the directory holding this script's bin/.
+script=$(readlink -f "${BASH_SOURCE[0]}")
+template=$(dirname "$(dirname "$script")")
+[ -f "$template/CLAUDE.md" ] || die "cannot find the template from $script"
+
+target="$parent/$name"
+[ -e "$target" ] && die "$target already exists"
+
+command -v git >/dev/null || die "git is not installed"
+
+mkdir -p "$target"
+# -a to keep the executable bit on bin/; the template's own .git is excluded
+# rather than filtered afterwards, so a half-copied history is never possible.
+(cd "$template" && tar -cf - --exclude=./.git --exclude=./bin .) | (cd "$target" && tar -xf -)
+
+# Name the package after the project so `uv sync` does not build every project
+# under the template's name.
+if [ -f "$target/pyproject.toml" ]; then
+    slug=$(printf '%s' "$name" | tr '[:upper:] ' '[:lower:]-')
+    sed -i "s|^name = \"astro-template\"|name = \"$slug\"|" "$target/pyproject.toml"
+fi
+
+today=$(date +%Y-%m-%d)
+cat > "$target/README.md" <<EOF
+# $name
+
+An astronomy project. Conventions, layout and the manuscript toolchain come
+from \`astro-template\`; the research agents come from the \`astro\` plugin.
+
+- **Working conventions:** [\`CLAUDE.md\`](CLAUDE.md)
+- **Lab notebook:** [\`docs/NOTEBOOK.md\`](docs/NOTEBOOK.md) — decisions and dead ends
+- **Manuscript style:** [\`paper/STYLE.md\`](paper/STYLE.md)
+
+## Setup
+
+\`\`\`bash
+uv sync
+cd paper && make check      # what the TeX install is missing, if anything
+\`\`\`
+
+## The question
+
+*State it here in one falsifiable sentence, with the threshold. Ask
+\`project-scout\` if it is not that sharp yet.*
+EOF
+
+cat >> "$target/docs/NOTEBOOK.md" <<EOF
+
+## $today — Project started
+
+**What:** Created $name from astro-template.
+**Why:**
+**Where:**
+**Open:** The question is not yet stated as one falsifiable sentence.
+EOF
+
+git -C "$target" init -q
+git -C "$target" add -A
+git -C "$target" commit -q -m "Start $name from astro-template
+
+Layout, conventions, and the Acta Astronomica manuscript toolchain.
+Research agents come from the astro plugin, declared in .claude/settings.json."
+
+printf 'created %s\n\n' "$target"
+printf 'next:\n'
+printf '  cd %s\n' "$target"
+printf '  uv sync\n'
+printf '  claude plugin install astro@astro-agents --scope project   # if not already\n\n'
+printf 'then ask project-scout whether the question is worth the data.\n'

@@ -1,0 +1,134 @@
+%% ======================================================================
+%% Manuscript skeleton -- Acta Astronomica
+%%
+%% Class and the reference template came from
+%%   https://acta.astrouw.edu.pl/acta/MISC/Acta_Style/
+%% acta.cls is the journal's own file and is NOT edited. The untouched
+%% example is kept alongside as acta-template.tex.
+%%
+%% Build:  make          (pdflatex, twice, via the Makefile in this dir)
+%% Style:  see STYLE.md for the conventions this class enforces.
+%% ======================================================================
+\documentclass{acta}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{supertabular}
+\usepackage{lscape}
+
+%% First and last page of the article as it will appear in the volume.
+%% Leave {0}{0} until the editor assigns them.
+\SetPages{0}{0}
+%% Volume and year. Acta Astronomica is at vol. 76 in 2026.
+\SetVol{76}{2026}
+
+\begin{document}
+
+%% ----------------------------------------------------------------------
+%% Title page
+%%
+%% Acta sets author surnames l~e~t~t~e~r~s~p~a~c~e~d with ~ between
+%% letters; initials follow the surname and are not spaced.
+%% ----------------------------------------------------------------------
+\begin{Titlepage}
+
+\Title{Title of the Paper}
+
+\Author{K~o~l~s~u~t, K.}
+       {Affiliation, Street, Postal code City, Country\\
+        e-mail: krzysztof.kolsut@gmail.com}
+
+\Received{Month Day, Year}
+
+\end{Titlepage}
+
+%% ----------------------------------------------------------------------
+%% Abstract + key words.
+%% The abstract must state the principal conclusion, with the number and
+%% its uncertainty in it. Key words come from the common list used by the
+%% major astronomical journals.
+%% ----------------------------------------------------------------------
+\Abstract{%
+Text of the abstract. State the principal conclusion of the work plainly,
+including the measured value with its uncertainty and the confidence level
+of any limit.
+}{%
+key words -- from the common list -- separated by commas%
+}
+
+%% ----------------------------------------------------------------------
+\section{Introduction}
+
+What the question is, what is already known, and what this paper adds.
+In-text citation in Acta is author--year in running text: Udalski
+\textit{et al.\ }(2015) found\dots, or parenthetically (Udalski
+\textit{et al.\ }2015). Every citation here must have a matching
+\verb|\refitem| in the reference list below.
+
+\section{Observations and Data}
+
+Instrument, dates, filters or setup, exposure times, and the archive query
+or program ID the data came from. Give the time system explicitly
+(BJD\_TDB unless stated otherwise) and say which reduction scripts under
+\texttt{scripts/} produced each product.
+
+\section{Analysis}
+
+\subsection{Subsection Title}
+
+Method, with the assumptions stated. Equations are numbered and referred
+to as Eq.~(\ref{eq:example}):
+
+\begin{equation}
+P = 2\pi\sqrt{\frac{a^{3}}{GM}}\,.
+\label{eq:example}
+\end{equation}
+
+%% Figures. \FigCap steps the figure counter, so \label goes AFTER it.
+%% Figures live in figures/ and are produced by scripts/, never drawn by
+%% hand -- see STYLE.md.
+% \begin{figure}[htb]
+% \centering
+% \includegraphics[width=12cm]{figures/example.pdf}
+% \FigCap{Caption. Say what is plotted, in what units, and what the error
+% bars represent.}
+% \label{fig:example}
+% \end{figure}
+
+%% Tables use the class's \MakeTable{cols}{width}{caption}{body}.
+% \MakeTable{lcc}{12.5cm}{Caption of the table.}
+% {\hline
+% Quantity & Value & Unit\\
+% \hline
+% $P$ & $1.2345 \pm 0.0007$ & d\\
+% \hline}
+
+\section{Results}
+
+The numbers, each with its uncertainty, and what limits them.
+
+\section{Discussion and Conclusions}
+
+What the result means, and what would falsify it.
+
+\Acknow{%
+Funding, facilities, archives, and software. Acknowledge the surveys whose
+data you used in the form they ask for.%
+}
+
+%% ----------------------------------------------------------------------
+%% References. Acta does NOT use BibTeX -- entries are \refitem, and the
+%% list must be in alphabetical order by first author.
+%%
+%%   \refitem{Authors}{Year}{Journal}{Volume}{Page}
+%%
+%% Pass ~ for any field that does not apply (a book, a preprint).
+%% Journal macros defined by the class: \AA \AAS \ApJ \ApJS \AJ \IBVS
+%% \PASP \Acta \MNRAS \AN \PR
+%%
+%% Generate this file from docs/lit/refs.bib with:
+%%   uv run python scripts/bib2acta.py docs/lit/refs.bib -o paper/references.tex
+%% ----------------------------------------------------------------------
+\input{references.tex}
+
+\end{document}
