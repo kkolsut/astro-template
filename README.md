@@ -51,31 +51,38 @@ docs/NOTEBOOK.md  decisions and dead ends, append-only
 
 ## Connecting the agents
 
-`.claude/settings.json` declares where the agents come from. It ships pointing
-at a local checkout:
+`.claude/settings.json` declares where the agents come from, and is committed,
+so each project records which agents it used:
 
 ```json
 {
   "extraKnownMarketplaces": {
     "astro-agents": {
-      "source": { "source": "directory", "path": "/home/sisio/projects/astro-agents" }
+      "source": { "source": "github", "repo": "kkolsut/astro-agents" }
     }
   },
   "enabledPlugins": { "astro@astro-agents": true }
 }
 ```
 
-Once `astro-agents` is pushed to a git host, change that to the remote so a
-fresh clone on any machine resolves it — and so the project records which
-version it used:
+A new project needs one command to actually install it:
 
-```json
-"source": { "source": "git", "url": "https://git.example.internal/you/astro-agents.git", "ref": "v1.0.0" }
+```bash
+claude plugin install astro@astro-agents --scope project
 ```
 
-On a self-hosted host the URL **must end in `.git`**, or Claude Code treats it
-as a link to a JSON file and never clones. Pinning `ref` to a tag is what lets
-a finished paper say which version of `results-referee` checked its numbers.
+This tracks the default branch, which is what you want while the agents are
+still being edited. **When a paper is submitted, pin it**, so the published
+result can say which version of `results-referee` checked its numbers:
+
+```json
+"source": { "source": "github", "repo": "kkolsut/astro-agents", "ref": "v1.2.0" }
+```
+
+`ref` takes a tag, a branch, or a commit SHA. On a self-hosted git host use
+`{ "source": "git", "url": "..." }` instead, with a URL that **ends in
+`.git`** — without the suffix Claude Code treats it as a link to a JSON file
+and never clones.
 
 ## Keeping the template current
 
